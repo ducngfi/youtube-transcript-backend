@@ -85,4 +85,4 @@ def test():
     return jsonify({"message": "Flask server is running"}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=True, host='https://youtube-transcript-backend-n3zx.onrender.com', port=5001)
