@@ -69,18 +69,18 @@ def get_transcript():
             return Response(formatted_transcript, mimetype='application/json')
     except NoTranscriptFound:
         app.logger.error("No transcript found for the video")
-        return jsonify({"error": "No transcript found for this video"}), 404
+        return jsonify({"error": "No transcript found for this video", "details": "The video does not have any available transcripts."}), 404
     except TranscriptsDisabled:
         app.logger.error("Transcripts are disabled for this video")
-        return jsonify({"error": "Transcripts are disabled for this video"}), 403
+        return jsonify({"error": "Transcripts are disabled for this video", "details": "The video owner has disabled transcripts for this content."}), 403
     except VideoUnavailable:
         app.logger.error("The video is unavailable")
-        return jsonify({"error": "The video is unavailable"}), 404
+        return jsonify({"error": "The video is unavailable", "details": "The requested video could not be accessed. It might be private or deleted."}), 404
     except Exception as e:
         app.logger.error(f"Error fetching transcript: {str(e)}")
         app.logger.error(f"Error type: {type(e).__name__}")
         app.logger.error(f"Error args: {e.args}")
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
 
 @app.route('/api/test', methods=['GET'])
 def test():
