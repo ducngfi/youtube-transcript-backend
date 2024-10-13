@@ -78,6 +78,8 @@ def get_transcript():
         return jsonify({"error": "The video is unavailable"}), 404
     except Exception as e:
         app.logger.error(f"Error fetching transcript: {str(e)}")
+        app.logger.error(f"Error type: {type(e).__name__}")
+        app.logger.error(f"Error args: {e.args}")
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
 @app.route('/api/test', methods=['GET'])
@@ -87,10 +89,13 @@ def test():
 
 @app.route('/api/test-transcript/<video_id>', methods=['GET'])
 def test_transcript(video_id):
+    app.logger.debug(f"Attempting to fetch transcript for video ID: {video_id}")
     try:
         transcript = YouTubeTranscriptApi.get_transcript(video_id)
-        return jsonify({"success": True, "transcript": transcript[:5]})  # Return first 5 entries
+        app.logger.info(f"Successfully fetched transcript for video ID: {video_id}")
+        return jsonify({"success": True, "transcript": transcript[:5]})
     except Exception as e:
+        app.logger.error(f"Error fetching transcript for video ID {video_id}: {str(e)}", exc_info=True)
         return jsonify({"success": False, "error": str(e)})
 
 if __name__ == '__main__':
