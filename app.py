@@ -4,6 +4,7 @@ from flask_cors import CORS
 import re
 import logging
 import json
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -85,4 +86,5 @@ def test():
     return jsonify({"message": "Flask server is running"}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True, host='https://youtube-transcript-backend-n3zx.onrender.com', port=5001)
+    port = int(os.environ.get('PORT', 5001))
+    app.run(host='0.0.0.0', port=port)
