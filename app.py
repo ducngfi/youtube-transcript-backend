@@ -7,7 +7,7 @@ import json
 import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -85,6 +85,14 @@ def test():
     app.logger.info("Test route accessed")
     return jsonify({"message": "Flask server is running"}), 200
 
+@app.route('/api/test-transcript/<video_id>', methods=['GET'])
+def test_transcript(video_id):
+    try:
+        transcript = YouTubeTranscriptApi.get_transcript(video_id)
+        return jsonify({"success": True, "transcript": transcript[:5]})  # Return first 5 entries
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=True)
