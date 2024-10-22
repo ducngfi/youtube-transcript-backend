@@ -84,8 +84,7 @@ def get_transcript():
 
 @app.route('/api/test', methods=['GET'])
 def test():
-    app.logger.info("Test route accessed")
-    return jsonify({"message": "Flask server is running"}), 200
+    return jsonify({"message": "Backend is working"}), 200
 
 @app.route('/api/test-transcript/<video_id>', methods=['GET'])
 def test_transcript(video_id):
@@ -97,6 +96,25 @@ def test_transcript(video_id):
     except Exception as e:
         app.logger.error(f"Error fetching transcript for video ID {video_id}: {str(e)}", exc_info=True)
         return jsonify({"success": False, "error": str(e)})
+
+@app.route('/api/check-transcript', methods=['GET'])
+def check_transcript():
+    video_url = request.args.get('video_url')
+    if not video_url:
+        return jsonify({"error": "No video URL provided"}), 400
+    
+    video_id = extract_video_id(video_url)
+    if not video_id:
+        return jsonify({"error": "Invalid YouTube URL"}), 400
+    
+    try:
+        YouTubeTranscriptApi.list_transcripts(video_id)
+        return jsonify({"available": True, "message": "Transcript is available"}), 200
+    except (NoTranscriptFound, TranscriptsDisabled, VideoUnavailable):
+        return jsonify({"available": False, "message": "Transcript is not available for this video"}), 200
+    except Exception as e:
+        app.logger.error(f"Error checking transcript availability: {str(e)}")
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
