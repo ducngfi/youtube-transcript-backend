@@ -17,7 +17,7 @@ def extract_video_id(url):
     match = re.search(pattern, url)
     return match.group(1) if match else None
 
-def format_transcript(transcript, format_type):
+def format_transcript(transcript, format_type='txt'):
     if format_type == 'txt':
         return '\n'.join([f"{item['text']}" for item in transcript])
     elif format_type == 'srt':
